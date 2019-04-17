@@ -245,86 +245,80 @@ class _CounterState extends State<Counter> {
   }
 }*/
 
-// 显示计数器
-class CounterDisplay extends StatelessWidget {
-  CounterDisplay({this.count});
+import 'package:flutter/material.dart';
 
-  final int count;
-
+class TabbedAppBarSample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new Text('Count: $count');
-  }
-}
-
-// 更改计数器
-class CounterIncrementor extends StatelessWidget {
-  CounterIncrementor({this.onPressed});
-
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return new RaisedButton(
-      onPressed: onPressed,
-      child: new Text('Increment'),
+    return MaterialApp(
+      home: DefaultTabController(
+        length: choices.length,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('JiaLi AppBar'),
+            bottom: TabBar(
+              isScrollable: true,
+              tabs: choices.map<Widget>((Choice choice) {
+                return Tab(
+                  text: choice.title,
+                  icon: Icon(choice.icon),
+                );
+              }).toList(),
+            ),
+          ),
+          body: TabBarView(
+            children: choices.map<Widget>((Choice choice) {
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ChoiceCard(choice: choice),
+              );
+            }).toList(),
+          ),
+        ),
+      ),
     );
   }
 }
 
-class Counter extends StatefulWidget {
-  @override
-  _CounterState createState() => new _CounterState();
+class Choice {
+  const Choice({ this.title, this.icon });
+  final String title;
+  final IconData icon;
 }
 
-class _CounterState extends State<Counter> {
-  int _counter = 0;
+const List<Choice> choices = <Choice>[
+  Choice(title: 'CAR', icon: Icons.directions_car),
+  Choice(title: 'BICYCLE', icon: Icons.directions_bike),
+  Choice(title: 'BOAT', icon: Icons.directions_boat),
+  Choice(title: 'BUS', icon: Icons.directions_bus),
+  Choice(title: 'TRAIN', icon: Icons.directions_railway),
+  Choice(title: 'WALK', icon: Icons.directions_walk),
+];
 
-  void _increment() {
-    setState(() {
-      ++_counter;
-    });
-  }
+class ChoiceCard extends StatelessWidget {
+  const ChoiceCard({ Key key, this.choice }) : super(key: key);
+
+  final Choice choice;
 
   @override
   Widget build(BuildContext context) {
-    return new Row(children: <Widget>[
-      new CounterIncrementor(onPressed: _increment),
-      new CounterDisplay(count: _counter),
-    ]);
-  }
-}
-
-
-class Product {
-  const Product({this.name});
-  final String name;
-}
-
-typedef void CartChangedCallback(Product product, bool inCart);
-
-class ShoppingListItem extends StatelessWidget {
-  ShoppingListItem({Product product, this.inCart, this.onCartChanged})
-      : product = product,
-        super(key: new ObjectKey(product));
-
-  final Product product;
-  final bool inCart;
-  final CartChangedCallback onCartChanged;
-
-  Color _getColor(BuildContext context) {
-    // The theme depends on the BuildContext because different parts of the tree
-    // can have different themes.  The BuildContext indicates where the build is
-    // taking place and therefore which theme to use.
-
-    return inCart ? Colors.black54 : Theme.of(context).primaryColor;
-  }
-
-  TextStyle _getTextStyle(BuildContext context) {
-    if (!inCart) return null;
-
-    return new TextStyle(
-      color: Colors.black54,
-      decoration: TextDecoration.lineThrough,
+    final TextStyle textStyle = Theme.of(context).textTheme.display1;
+    return Card(
+      color: Colors.grey,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Icon(choice.icon, size: 128.0, color: textStyle.color),
+            Text(choice.title, style: textStyle),
+          ],
+        ),
+      ),
     );
   }
+}
+
+void main() {
+  runApp(TabbedAppBarSample());
+}
